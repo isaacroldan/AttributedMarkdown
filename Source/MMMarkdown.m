@@ -36,7 +36,7 @@
 #pragma mark Public Methods
 //==================================================================================================
 
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error
++ (NSMutableAttributedString *)HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error
 {
     if (string == nil)
     {
@@ -45,8 +45,8 @@
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
     }
     
-    if ([string length] == 0)
-        return @"";
+//    if ([string length] == 0)
+//        return @"";
     
     MMParser    *parser    = [MMParser new];
     MMGenerator *generator = [MMGenerator new];

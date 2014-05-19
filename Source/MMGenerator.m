@@ -140,27 +140,27 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
     switch (anElement.type)
     {
         case MMElementTypeHeader:
-            return [NSString stringWithFormat:@"</h%u>\n", (unsigned int)anElement.level];
+            return [NSString stringWithFormat:@"\n"];
         case MMElementTypeParagraph:
-            return @"</p>\n";
+            return @"\n";
         case MMElementTypeBulletedList:
-            return @"</ul>\n";
+            return @"\n";
         case MMElementTypeNumberedList:
-            return @"</ol>\n";
+            return @"\n";
         case MMElementTypeListItem:
-            return @"</li>\n";
+            return @"\n";
         case MMElementTypeBlockquote:
-            return @"</blockquote>\n";
+            return @"\n";
         case MMElementTypeCodeBlock:
-            return @"</code></pre>\n";
+            return @"\n";
         case MMElementTypeStrong:
-            return @"</strong>";
+            return @"";
         case MMElementTypeEm:
-            return @"</em>";
+            return @"";
         case MMElementTypeCodeSpan:
-            return @"</code>";
+            return @"";
         case MMElementTypeLink:
-            return @"</a>";
+            return @"";
         default:
             return nil;
     }
@@ -169,7 +169,7 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
 @interface MMGenerator ()
 - (void) _generateHTMLForElement:(MMElement *)anElement
                       inDocument:(MMDocument *)aDocument
-                            HTML:(NSMutableString *)theHTML
+                            HTML:(NSMutableAttributedString *)theHTML
                         location:(NSUInteger *)aLocation;
 @end
 
@@ -180,19 +180,20 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
 #pragma mark Public Methods
 //==================================================================================================
 
-- (NSString *)generateHTML:(MMDocument *)aDocument
+- (NSMutableAttributedString *)generateHTML:(MMDocument *)aDocument
 {
-    NSString   *markdown = aDocument.markdown;
+    //NSString   *markdown = aDocument.markdown;
     NSUInteger  location = 0;
-    NSUInteger  length   = markdown.length;
+    //NSUInteger  length   = markdown.length;
     
-    NSMutableString *HTML = [NSMutableString stringWithCapacity:length * kHTMLDocumentLengthMultiplier];
-    
+    //NSMutableString *HTML = [NSMutableString stringWithCapacity:length * kHTMLDocumentLengthMultiplier];
+    NSMutableAttributedString *HTML = [[NSMutableAttributedString alloc] init];
     for (MMElement *element in aDocument.elements)
     {
         if (element.type == MMElementTypeHTML)
         {
-            [HTML appendString:[aDocument.markdown substringWithRange:element.range]];
+            [HTML appendAttributedString:[[NSAttributedString alloc] initWithString:[aDocument.markdown substringWithRange:element.range]]];
+//            [HTML appendString:[aDocument.markdown substringWithRange:element.range]];
         }
         else
         {
@@ -214,32 +215,60 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
 
 - (void)_generateHTMLForElement:(MMElement *)anElement
                      inDocument:(MMDocument *)aDocument
-                           HTML:(NSMutableString *)theHTML
+                           HTML:(NSMutableAttributedString *)theHTML
                        location:(NSUInteger *)aLocation
 {
     NSString *startTag = __HTMLStartTagForElement(anElement);
+ 
     NSString *endTag   = __HTMLEndTagForElement(anElement);
     
-    if (startTag)
-        [theHTML appendString:startTag];
-    
+//    if (startTag)
+//        [theHTML appendString:startTag];
+    NSDictionary * attributes = @{
+                                  NSStrokeWidthAttributeName: [NSNumber numberWithFloat:-3.0],
+                                  NSStrokeColorAttributeName:[UIColor yellowColor],
+                                  NSForegroundColorAttributeName:[UIColor redColor],
+                                  NSBackgroundColorAttributeName:[UIColor lightGrayColor]
+                                  };
     for (MMElement *child in anElement.children)
     {
+        int start = (int)theHTML.length;
+        int end = (int)child.range.length;
+
         if (child.type == MMElementTypeNone)
         {
             NSString *markdown = aDocument.markdown;
             if (child.range.length == 0)
             {
-                [theHTML appendString:@"\n"];
+                
+               // [theHTML appendString:@"\n"];
+                
+                [theHTML appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+                //[theHTML addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"OpenSans" size:20] range:NSMakeRange(start, end)];
             }
             else
             {
-                [theHTML appendString:[markdown substringWithRange:child.range]];
+                //[theHTML appendString:[markdown substringWithRange:child.range]];
+                [theHTML appendAttributedString:[[NSAttributedString alloc] initWithString:[markdown substringWithRange:child.range]]];
+                if ([startTag isEqualToString:@"<h1>"]) {
+                    //[theHTML addAttributes:attributes range:NSMakeRange(start, end)];
+                    [theHTML addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"OpenSans" size:40] range:NSMakeRange(start, end)];
+
+                }
+                else {
+                    [theHTML addAttributes:attributes range:NSMakeRange(start, end)];
+
+                    //[theHTML addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"OpenSans" size:20] range:NSMakeRange(start, end)];
+                
+                }
             }
         }
         else if (child.type == MMElementTypeHTML)
         {
-            [theHTML appendString:[aDocument.markdown substringWithRange:child.range]];
+            [theHTML appendAttributedString:[[NSAttributedString alloc] initWithString:[aDocument.markdown substringWithRange:child.range]]];
+            [theHTML addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"OpenSans" size:20] range:NSMakeRange(start, end)];
+
+            //[theHTML appendString:[aDocument.markdown substringWithRange:child.range]];
         }
         else
         {
@@ -251,7 +280,7 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
     }
     
     if (endTag)
-        [theHTML appendString:endTag];
+        [theHTML appendAttributedString:[[NSAttributedString alloc] initWithString:endTag]];
 }
 
 
