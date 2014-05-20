@@ -28,7 +28,7 @@
     NSString *markdown = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Example" ofType:@"md"]  encoding:NSUTF8StringEncoding error:nil];
 
     NSError *error = nil;
-    NSMutableAttributedString *stylie = [MMMarkdown HTMLStringWithMarkdown:markdown error:&error];
+    NSMutableAttributedString *stylie = [MMMarkdown HTMLStringWithMarkdown:markdown baseURL:@"redbooth.com" error:&error];
     myView.attributedText = stylie;
 
 }

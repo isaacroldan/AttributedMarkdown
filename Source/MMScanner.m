@@ -70,15 +70,35 @@ static NSString *__delimitersForCharacter(unichar character)
     return [[[self class] alloc] initWithString:aString];
 }
 
++ (id)scannerWithString:(NSString *)aString andBaseURL:(NSString*)baseURL
+{
+    return [[[self class] alloc] initWithString:aString andBaseURL:baseURL];
+}
+
 - (id)initWithString:(NSString *)aString
 {
     NSArray *lineRanges = [self _lineRangesForString:aString];
     return [self initWithString:aString lineRanges:lineRanges];
 }
 
+- (id)initWithString:(NSString *)aString andBaseURL:(NSString*)baseURL
+{
+    NSArray *lineRanges = [self _lineRangesForString:aString];
+    MMScanner *s = [self initWithString:aString lineRanges:lineRanges];
+    s.baseURL = baseURL;
+    return s;
+}
+
 + (id)scannerWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges
 {
     return [[[self class] alloc] initWithString:aString lineRanges:theLineRanges];
+}
+
++ (id)scannerWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges baseURL:(NSString*)baseURL
+{
+    MMScanner *s = [[[self class] alloc] initWithString:aString lineRanges:theLineRanges];
+    s.baseURL = baseURL;
+    return s;
 }
 
 - (id)initWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges
@@ -225,6 +245,9 @@ static NSString *__delimitersForCharacter(unichar character)
                                                    range:searchRange];
     
     NSUInteger current = self.location;
+    if ([self baseURLInRange:searchRange]) {
+        return 0;
+    }
     
     if (range.location == NSNotFound)
     {
@@ -236,6 +259,15 @@ static NSString *__delimitersForCharacter(unichar character)
     }
     
     return self.location - current;
+}
+
+- (BOOL)baseURLInRange:(NSRange)range
+{
+    if (range.location+range.length<self.string.length) {
+        NSRange baseRange = [self.string rangeOfString:self.baseURL options:NSCaseInsensitiveSearch range:range];
+        return (baseRange.location != NSNotFound);
+    }
+    return NO;
 }
 
 - (NSUInteger)skipCharactersFromSet:(NSCharacterSet *)aSet max:(NSUInteger)maxToSkip

@@ -79,12 +79,12 @@ static NSString * __HTMLEntityForCharacter(unichar character)
 #pragma mark Public Methods
 //==================================================================================================
 
-- (MMDocument *)parseMarkdown:(NSString *)markdown error:(__autoreleasing NSError **)error
+- (MMDocument *)parseMarkdown:(NSString *)markdown baseURL:(NSString*)baseURL error:(__autoreleasing NSError **)error
 {
     // It would be better to not replace all the tabs with spaces. But this will do for now.
     markdown = [self _removeTabsFromString:markdown];
     
-    MMScanner  *scanner  = [MMScanner scannerWithString:markdown];
+    MMScanner  *scanner  = [MMScanner scannerWithString:markdown andBaseURL:baseURL];
     MMDocument *document = [MMDocument documentWithMarkdown:markdown];
     
     document.elements = [self _parseElementsWithScanner:scanner];
@@ -336,7 +336,7 @@ static NSString * __HTMLEntityForCharacter(unichar character)
     
     if (element.innerRanges.count > 0)
     {
-        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
         element.children = [self.spanParser parseSpansWithScanner:innerScanner];
     }
     
@@ -400,7 +400,7 @@ static NSString * __HTMLEntityForCharacter(unichar character)
     element.range = NSMakeRange(scanner.startLocation, scanner.location-scanner.startLocation);
     if (element.innerRanges.count > 0)
     {
-        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
         element.children = [self.spanParser parseSpansWithScanner:innerScanner];
     }
     
@@ -459,7 +459,7 @@ static NSString * __HTMLEntityForCharacter(unichar character)
     
     if (element.innerRanges.count > 0)
     {
-        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
         element.children = [self _parseElementsWithScanner:innerScanner];
     }
     
@@ -795,8 +795,8 @@ static NSString * __HTMLEntityForCharacter(unichar character)
         {
             NSArray *preListRanges  = [element.innerRanges subarrayWithRange:NSMakeRange(0, nestedListIndex)];
             NSArray *postListRanges = [element.innerRanges subarrayWithRange:NSMakeRange(nestedListIndex, element.innerRanges.count - nestedListIndex)];
-            MMScanner *preListScanner  = [MMScanner scannerWithString:scanner.string lineRanges:preListRanges];
-            MMScanner *postListScanner = [MMScanner scannerWithString:scanner.string lineRanges:postListRanges];
+            MMScanner *preListScanner  = [MMScanner scannerWithString:scanner.string lineRanges:preListRanges baseURL:scanner.baseURL];
+            MMScanner *postListScanner = [MMScanner scannerWithString:scanner.string lineRanges:postListRanges baseURL:scanner.baseURL];
             
             if (canContainBlocks)
             {
@@ -811,7 +811,7 @@ static NSString * __HTMLEntityForCharacter(unichar character)
         }
         else
         {
-            MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+            MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
             if (canContainBlocks)
             {
                 element.children = [self _parseElementsWithScanner:innerScanner];
@@ -1024,7 +1024,7 @@ static NSString * __HTMLEntityForCharacter(unichar character)
     
     element.range = NSMakeRange(scanner.startLocation, scanner.location-scanner.startLocation);
     
-    MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+    MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
     element.children = [self.spanParser parseSpansWithScanner:innerScanner];
     
     return element;

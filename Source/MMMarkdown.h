@@ -29,5 +29,6 @@
 @interface MMMarkdown : NSObject
 
 + (NSMutableAttributedString *) HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error;
++ (NSMutableAttributedString *)HTMLStringWithMarkdown:(NSString *)string baseURL:(NSString*)baseURL error:(__autoreleasing NSError **)error;
 
 @end

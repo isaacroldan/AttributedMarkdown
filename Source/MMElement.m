@@ -68,8 +68,10 @@ static NSString * __MMStringFromElementType(MMElementType type)
             return @"entity";
         case MMElementTypeDefinition:
             return @"definition";
-        case MMELEmentTypeMention:
+        case MMElementTypeMention:
             return @"mention";
+        case MMElementTypeRedboothLink:
+            return @"redboothLink";
         default:
             return @"unknown";
     }

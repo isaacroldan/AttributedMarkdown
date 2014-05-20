@@ -38,6 +38,11 @@
 
 + (NSMutableAttributedString *)HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error
 {
+   return [self HTMLStringWithMarkdown:string baseURL:nil error:error];
+}
+
++ (NSMutableAttributedString *)HTMLStringWithMarkdown:(NSString *)string baseURL:(NSString*)baseURL error:(__autoreleasing NSError **)error
+{
     if (string == nil)
     {
         NSString *reason = [NSString stringWithFormat:@"[%@ %@]: nil argument for markdown",
@@ -45,13 +50,13 @@
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
     }
     
-//    if ([string length] == 0)
-//        return @"";
+    //    if ([string length] == 0)
+    //        return @"";
     
     MMParser    *parser    = [MMParser new];
     MMGenerator *generator = [MMGenerator new];
     
-    MMDocument *document = [parser parseMarkdown:string error:error];
+    MMDocument *document = [parser parseMarkdown:string baseURL:baseURL error:error];
     if (!document)
         return nil;
     

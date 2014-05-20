@@ -241,6 +241,12 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
         [scanner commitTransaction:element != nil];
         if (element)
             return element;
+        
+        [scanner beginTransaction];
+        element = [self _parseRedboothLinkWithScanner:scanner];
+        [scanner commitTransaction:element != nil];
+        if (element)
+            return element;
     }
     
     [scanner beginTransaction];
@@ -289,7 +295,7 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
         return nil;
     
     MMElement *element = [MMElement new];
-    element.type      = MMELEmentTypeMention;
+    element.type      = MMElementTypeMention;
     element.range     = NSMakeRange(scanner.startLocation, scanner.location-scanner.startLocation);
     element.children  = children;
     
@@ -865,13 +871,48 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
     if (element != nil)
     {
         self.parseLinks = NO;
-        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges];
+        MMScanner *innerScanner = [MMScanner scannerWithString:scanner.string lineRanges:element.innerRanges baseURL:scanner.baseURL];
         element.children = [self _parseWithScanner:innerScanner untilTestPasses:^{ return [innerScanner atEndOfString]; }];
         self.parseLinks = YES;
     }
     
     return element;
 }
+
+
+- (MMElement *)_parseRedboothLinkWithScanner:(MMScanner *)scanner
+{
+    //NSString *nextWord = [scanner nextWord];
+    NSRegularExpression *firstRegex = [NSRegularExpression regularExpressionWithPattern:@"http" options:0 error:nil];
+    NSRange startRange = [firstRegex rangeOfFirstMatchInString:scanner.string options:0 range:NSMakeRange(scanner.location, 4)];
+    if (startRange.location == NSNotFound) {
+        //[scanner advance];
+        return nil;
+    }
+
+    NSRegularExpression *regex;
+    NSRange matchRange;
+    NSString *pattern = [NSString stringWithFormat:@"https?://%@(/a)?/#!/projects/[0-9]+/(tasks|conversations|pages)/[0-9]+",scanner.baseURL];
+    regex      = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+    matchRange = [regex rangeOfFirstMatchInString:scanner.string options:0 range:NSMakeRange(scanner.location, scanner.string.length-scanner.location)];
+    //[scanner advance];
+    if (matchRange.location == NSNotFound)
+        return nil;
+    NSString *urlString = [scanner.string substringWithRange:matchRange];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    if (!url)
+        return nil;
+
+    MMElement *element = [MMElement new];
+    element.type      = MMElementTypeRedboothLink;
+    element.range     = matchRange;
+    element.href      = urlString;
+    element.title     = [NSString stringWithFormat:@"Task #%@",[[urlString componentsSeparatedByString:@"/"] lastObject]];
+    
+    scanner.location = matchRange.location+matchRange.length;
+    return element;
+}
+
 
 - (MMElement *)_parseImageWithScanner:(MMScanner *)scanner
 {

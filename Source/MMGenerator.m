@@ -156,8 +156,14 @@ static NSAttributedString * __HTMLStartTagForElement(MMElement *anElement, NSStr
                                                                 __obfuscatedEmailAddress(anElement.href)] attributes:@{}];
         case MMElementTypeEntity:
             return [[NSAttributedString alloc] initWithString:anElement.stringValue attributes:@{}];
-        case MMELEmentTypeMention:
+        case MMElementTypeMention:
             return [[NSAttributedString alloc] initWithString:@" " attributes:@{}];
+        case MMElementTypeRedboothLink:
+            if (anElement.title) {
+                return [[NSAttributedString alloc] initWithString:anElement.title attributes:@{NSLinkAttributeName:anElement.href}];//@"<code>";
+            }
+            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
+
         default:
             return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
     }
@@ -189,7 +195,7 @@ static NSString * __HTMLEndTagForElement(MMElement *anElement)
             return @"";
         case MMElementTypeLink:
             return @"";
-        case MMELEmentTypeMention:
+        case MMElementTypeMention:
             return @" ";
         default:
             return @"";
@@ -295,11 +301,12 @@ static NSDictionary *__stringAttributesForElement(MMElement *anElement, NSMutabl
         case MMElementTypeCodeSpan:
             return @{NSFontAttributeName:[UIFont fontWithName:@"Courier" size:13],
                      NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1]};
+        case MMElementTypeRedboothLink:
         case MMElementTypeLink:
             return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
                      NSForegroundColorAttributeName:[UIColor colorWithRed:0.13 green:0.65 blue:0.72 alpha:1],
                      NSLinkAttributeName:anElement.href};
-        case MMELEmentTypeMention:
+        case MMElementTypeMention:
             [dictionary setObject:[UIFont fontWithName:kNormalFont size:13] forKey:NSFontAttributeName];
             [dictionary setObject:[UIColor colorWithRed:1/255.0f green:118/255.0f blue:119/255.0f alpha:1.0f] forKey:NSForegroundColorAttributeName];
             //[dictionary setObject:[UIColor colorWithRed:0.827 green:0.925 blue:0.941 alpha:1] forKey:NSBackgroundColorAttributeName];
