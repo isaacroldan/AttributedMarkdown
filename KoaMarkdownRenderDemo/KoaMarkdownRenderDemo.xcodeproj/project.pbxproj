@@ -37,6 +37,7 @@
 		6A6A8CD1192A3F22006A29BD /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A6A8CC6192A3B49006A29BD /* OpenSans-Bold.ttf */; };
 		6A6A8CD3192A5D70006A29BD /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A6A8CD2192A5D6E006A29BD /* OpenSans-Italic.ttf */; };
 		6A6A8CD5192B6069006A29BD /* OpenSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A6A8CD4192B6069006A29BD /* OpenSans-BoldItalic.ttf */; };
+		6A6A8CD8192BC05C006A29BD /* MMAttributesHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A6A8CD7192BC05C006A29BD /* MMAttributesHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,8 @@
 		6A6A8CCA192A3B49006A29BD /* teambox-font.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "teambox-font.ttf"; sourceTree = "<group>"; };
 		6A6A8CD2192A5D6E006A29BD /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Italic.ttf"; sourceTree = "<group>"; };
 		6A6A8CD4192B6069006A29BD /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		6A6A8CD6192BC05C006A29BD /* MMAttributesHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMAttributesHelper.h; path = ../../Source/MMAttributesHelper.h; sourceTree = "<group>"; };
+		6A6A8CD7192BC05C006A29BD /* MMAttributesHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MMAttributesHelper.m; path = ../../Source/MMAttributesHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +221,8 @@
 				6A6A8CBA192A3B14006A29BD /* MMScanner.m */,
 				6A6A8CBB192A3B14006A29BD /* MMSpanParser.h */,
 				6A6A8CBC192A3B14006A29BD /* MMSpanParser.m */,
+				6A6A8CD6192BC05C006A29BD /* MMAttributesHelper.h */,
+				6A6A8CD7192BC05C006A29BD /* MMAttributesHelper.m */,
 			);
 			name = KoaMarkdownRender;
 			sourceTree = "<group>";
@@ -346,6 +351,7 @@
 				6A6A8CBD192A3B14006A29BD /* MMDocument.m in Sources */,
 				6A2A9C7819267CCE00821F5B /* KoaAppDelegate.m in Sources */,
 				6A6A8CC0192A3B14006A29BD /* MMHTMLParser.m in Sources */,
+				6A6A8CD8192BC05C006A29BD /* MMAttributesHelper.m in Sources */,
 				6A6A8CC3192A3B14006A29BD /* MMScanner.m in Sources */,
 				6A6A8CC1192A3B14006A29BD /* MMMarkdown.m in Sources */,
 				6A2A9C7E19267CCE00821F5B /* KoaViewController.m in Sources */,
