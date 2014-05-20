@@ -57,6 +57,7 @@
 - (NSString *)nextWord;
 
 - (void)advance;
+- (void)goBack;
 - (void)advanceToNextLine;
 
 - (BOOL)matchString:(NSString *)string;

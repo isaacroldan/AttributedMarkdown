@@ -18,14 +18,5 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>teambox-font.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>OpenSans.ttf</string>
-		<string>OpenSans-Semibold.ttf</string>
-		<string>OpenSans-Bold.ttf</string>
-		<string>OpenSans-Light.ttf</string>
-	</array>
 </dict>
 </plist>

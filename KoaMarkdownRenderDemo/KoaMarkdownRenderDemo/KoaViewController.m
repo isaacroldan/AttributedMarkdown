@@ -19,18 +19,12 @@
 {
     [super viewDidLoad];
     UITextView *myView = [UITextView new];
-    myView.frame = self.view.frame;
+    [myView setEditable:NO];
+    [myView setSelectable:YES];
+    myView.frame = CGRectMake(50, 20, 320-50, self.view.frame.size.height-20);
     myView.backgroundColor = [UIColor whiteColor];
+    [myView setLinkTextAttributes:@{NSForegroundColorAttributeName:[UIColor colorWithRed:0.13 green:0.65 blue:0.72 alpha:1]}];
     [self.view addSubview:myView];
-    for (NSString* family in [UIFont familyNames])
-    {
-        NSLog(@"%@", family);
-        
-        for (NSString* name in [UIFont fontNamesForFamilyName: family])
-        {
-            NSLog(@"  %@", name);
-        }
-    }
     NSString *markdown = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Example" ofType:@"md"]  encoding:NSUTF8StringEncoding error:nil];
 
     NSError *error = nil;

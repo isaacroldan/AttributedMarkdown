@@ -181,6 +181,11 @@ static NSString *__delimitersForCharacter(unichar character)
     self.location += 1;
 }
 
+- (void)goBack
+{
+    self.location -= 1;
+}
+
 - (void)advanceToNextLine
 {
     // If at the last line, just go to the end of the line

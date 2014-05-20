@@ -192,6 +192,13 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
         return element;
     
     [scanner beginTransaction];
+    element = [self _parseMentionWithScanner:scanner];
+    [scanner commitTransaction:element != nil];
+    if (element) {
+        return element;
+    }
+    
+    [scanner beginTransaction];
     element = [self _parseEmWithScanner:scanner];
     [scanner commitTransaction:element != nil];
     if (element)
@@ -249,6 +256,44 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
         return element;
     
     return nil;
+}
+
+- (MMElement *)_parseMentionWithScanner:(MMScanner *)scanner
+{
+    [scanner advance];
+    unichar character = [scanner nextCharacter];
+    if (character != '@') {
+        return nil;
+    }
+
+    // Can't be at the end of a line or before a space
+    if ([[NSCharacterSet whitespaceAndNewlineCharacterSet] characterIsMember:[scanner nextCharacter]])
+        return nil;
+    
+    NSCharacterSet  *whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+    NSArray         *children      = [self _parseWithScanner:scanner untilTestPasses:^{
+        // Can't be at the beginning of the line
+        if ([scanner atBeginningOfLine])
+            return NO;
+        
+        // Must follow the end of a word
+        if ([whitespaceSet characterIsMember:[scanner previousCharacter]])
+            return NO;
+
+        [scanner advance];
+        
+        return YES;
+    }];
+    
+    if (!children)
+        return nil;
+    
+    MMElement *element = [MMElement new];
+    element.type      = MMELEmentTypeMention;
+    element.range     = NSMakeRange(scanner.startLocation, scanner.location-scanner.startLocation);
+    element.children  = children;
+    
+    return element;
 }
 
 - (MMElement *)_parseStrongWithScanner:(MMScanner *)scanner

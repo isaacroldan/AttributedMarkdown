@@ -46,7 +46,8 @@ typedef enum
     MMElementTypeLink,
     MMElementTypeMailTo,
     MMElementTypeDefinition,
-    MMElementTypeEntity
+    MMElementTypeEntity,
+    MMELEmentTypeMention
 } MMElementType;
 
 @interface MMElement : NSObject
