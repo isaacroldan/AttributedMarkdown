@@ -245,6 +245,8 @@ static NSString *__delimitersForCharacter(unichar character)
                                                    range:searchRange];
     
     NSUInteger current = self.location;
+    
+    //Redbooth urls have a !, to avoid conflicts, return 0 if we detect a url
     if ([self baseURLInRange:searchRange]) {
         return 0;
     }

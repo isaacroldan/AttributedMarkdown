@@ -1,9 +1,9 @@
-link: https://redbooth.com/a/#!/projects/487419/tasks/12305700
-link: https://redbooth.com/a/#!/projects/487419/tasks/12305700
+https://redbooth.com/a/#!/projects/487419/tasks/12305700
+link: https://redbooth.com/a/#!/projects/487419/conversations/12305700
 
 #
 
-un link: https://redbooth.com/a/#!/projects/487419/tasks/12305700 mas texto
+un link: https://redbooth.com/a/#!/projects/487419/pages/12305700 mas texto
 
 this is a mention with styles:
 

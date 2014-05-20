@@ -882,20 +882,20 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
 
 - (MMElement *)_parseRedboothLinkWithScanner:(MMScanner *)scanner
 {
-    //NSString *nextWord = [scanner nextWord];
+    //if the string starts with http, then is a link
     NSRegularExpression *firstRegex = [NSRegularExpression regularExpressionWithPattern:@"http" options:0 error:nil];
     NSRange startRange = [firstRegex rangeOfFirstMatchInString:scanner.string options:0 range:NSMakeRange(scanner.location, 4)];
     if (startRange.location == NSNotFound) {
-        //[scanner advance];
+        [scanner advance];
         return nil;
     }
 
     NSRegularExpression *regex;
     NSRange matchRange;
+    //Find a string with a formatted url: http//baseURL/a/!#/projects/projectID/tasks/taskID
     NSString *pattern = [NSString stringWithFormat:@"https?://%@(/a)?/#!/projects/[0-9]+/(tasks|conversations|pages)/[0-9]+",scanner.baseURL];
     regex      = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
     matchRange = [regex rangeOfFirstMatchInString:scanner.string options:0 range:NSMakeRange(scanner.location, scanner.string.length-scanner.location)];
-    //[scanner advance];
     if (matchRange.location == NSNotFound)
         return nil;
     NSString *urlString = [scanner.string substringWithRange:matchRange];
@@ -903,11 +903,13 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
     if (!url)
         return nil;
 
+    
+    NSArray *urlComponents = [urlString componentsSeparatedByString:@"/"];
     MMElement *element = [MMElement new];
     element.type      = MMElementTypeRedboothLink;
     element.range     = matchRange;
     element.href      = urlString;
-    element.title     = [NSString stringWithFormat:@"Task #%@",[[urlString componentsSeparatedByString:@"/"] lastObject]];
+    element.title     = [NSString stringWithFormat:@"%@ #%@",urlComponents[urlComponents.count-2],[urlComponents lastObject]];
     
     scanner.location = matchRange.location+matchRange.length;
     return element;

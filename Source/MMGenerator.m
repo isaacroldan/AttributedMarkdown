@@ -337,11 +337,7 @@ static NSDictionary *__stringAttributesForElement(MMElement *anElement, NSMutabl
 
 - (NSMutableAttributedString *)generateHTML:(MMDocument *)aDocument
 {
-    //NSString   *markdown = aDocument.markdown;
     NSUInteger  location = 0;
-    //NSUInteger  length   = markdown.length;
-    
-    //NSMutableString *HTML = [NSMutableString stringWithCapacity:length * kHTMLDocumentLengthMultiplier];
     NSMutableAttributedString *HTML = [[NSMutableAttributedString alloc] init];
     for (MMElement *element in aDocument.elements) {
         if (element.type == MMElementTypeHTML) {
