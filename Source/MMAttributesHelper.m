@@ -20,6 +20,22 @@ static  NSString *kBoldItalicFont  = @"OpenSans-BoldItalic";
 
 + (NSAttributedString *)startStringForElement:(MMElement *)anElement listType:(NSString *)listType
 {
+    
+    NSAttributedString *attString;
+    if (anElement.type == MMElementTypeImage) {
+        if  (![[[anElement.href componentsSeparatedByString:@"."] lastObject] isEqualToString:@"gif"]) {
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:anElement.href]];
+            UIImage *image = [UIImage imageWithData:data];
+            NSTextAttachment *att = [[NSTextAttachment alloc] init];
+            int width = image.size.width < 250 ? image.size.width : 250;
+            att.bounds = CGRectMake(50, 0, width, image.size.height*width/image.size.width);
+            attString = [NSAttributedString attributedStringWithAttachment:att];
+        }
+        else {
+            NSString *gifString = [NSString stringWithFormat:@"<GIF>%@<GIF>",anElement.href];
+            attString = [[NSAttributedString alloc] initWithString:gifString attributes:@{}];
+        }
+    }
     switch (anElement.type)
     {
         case MMElementTypeHeader:
@@ -59,7 +75,8 @@ static  NSString *kBoldItalicFont  = @"OpenSans-BoldItalic";
         case MMElementTypeCodeSpan:
             return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
         case MMElementTypeImage:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
+            return attString;
+            //return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
         case MMElementTypeLink:
             return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
         case MMElementTypeMailTo:
