@@ -1,13 +1,13 @@
 # KoaMarkdownRender
 
-KoaMarkdownRender uses [MMMarkdown](https://github.com/mdiep/MMMarkdown) parser as a base to convert [Markdown][] to NSAttributedString with customizable styles.
+KoaMarkdownRender uses [MMMarkdown](https://github.com/mdiep/MMMarkdown) parser as a base to convert [Markdown][] to `NSAttributedString` with customizable styles.
 
-The idea is to add this NSAttributedString to a UITextView to be able to use Markdown with custom styles avoiding the use of HTML, CSS, UIWebViews and that stuff. 
+The idea is to add this NSAttributedString to a `UITextView` to be able to use Markdown with custom styles avoiding the use of HTML, CSS, `UIWebViews` and that stuff. 
 It support a lot of styles, including images, gifs, mentions, links, and more.
 
-All the styles can be easily adapted to any requirement (with the limitations of NSAttibutedString of course)
+All the styles can be easily adapted to any requirement (with the limitations of `NSAttibutedString` of course)
 
-The library includes a category of UITextView that supports the use of NSAttributedStrings with special elements like GIFs.
+The library includes a category of `UITextView` that supports the use of `NSAttributedStrings` with special elements like GIFs.
 
 ## MMMardkdown
 KoaMarkdownRender is a fork of [MMMarkdown](https://github.com/mdiep/MMMarkdown)
