@@ -37,6 +37,7 @@
 
     NSError *error = nil;
     NSMutableAttributedString *stylie = [MMMarkdown HTMLStringWithMarkdown:markdown baseURL:@"redbooth.com" error:&error];
+    
     [myView setAttributedContent:stylie];
 }
 

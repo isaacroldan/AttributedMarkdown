@@ -48,7 +48,8 @@ typedef enum
     MMElementTypeDefinition,
     MMElementTypeEntity,
     MMElementTypeMention,
-    MMElementTypeRedboothLink
+    MMElementTypeRedboothLink,
+    MMElementTypeYoutubeVideo
 } MMElementType;
 
 @interface MMElement : NSObject
