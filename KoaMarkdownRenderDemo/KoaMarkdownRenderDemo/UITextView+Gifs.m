@@ -43,7 +43,12 @@ static char previousHeightOffsetKey;
     //Add each item to the textView
     for (id elem in attArray) {
         if ([elem isKindOfClass:[NSString class]]) {
-            [self addGIFWithURL:elem]; //gifs!
+            if ([elem hasPrefix:@"<YOUTUBE>"]) {
+                [self addYoutubeVideoWithURL:[elem substringFromIndex:9]];
+            }
+            else {
+                [self addGIFWithURL:elem]; //gifs!
+            }
         }
         else {
             [self addAttributedString:elem];
@@ -66,8 +71,34 @@ static char previousHeightOffsetKey;
         searchRange.length = attString.string.length-searchRange.location;
         foundRange = [attString.string rangeOfString:@"<GIF>.+<GIF>" options:NSRegularExpressionSearch|NSCaseInsensitiveSearch range:searchRange];
         if (foundRange.location != NSNotFound) {
-            [attArray addObject:[attString attributedSubstringFromRange:NSMakeRange(searchRange.location, foundRange.location-searchRange.location)]];
+            NSAttributedString *auxString = [attString attributedSubstringFromRange:NSMakeRange(searchRange.location, foundRange.location-searchRange.location)];
+            NSArray *auxArray = [self splitAttributedStringWithYoutube:auxString];
+            [attArray addObjectsFromArray:auxArray];
             NSString *gifURL = [attString.string substringWithRange:NSMakeRange(foundRange.location+5, foundRange.length-10)];
+            [attArray addObject:gifURL];
+            searchRange.location = foundRange.location+foundRange.length;
+        } else {
+            //[attArray addObject:[attString attributedSubstringFromRange:searchRange]];
+            NSAttributedString *auxString = [attString attributedSubstringFromRange:searchRange];
+            NSArray *auxArray = [self splitAttributedStringWithYoutube:auxString];
+            [attArray addObjectsFromArray:auxArray];
+            break;
+        }
+    }
+    return attArray;
+}
+
+- (NSArray*)splitAttributedStringWithYoutube:(NSAttributedString*)attString
+{
+    NSRange searchRange = NSMakeRange(0,attString.string.length);
+    NSRange foundRange;
+    NSMutableArray *attArray = [@[] mutableCopy];
+    while (searchRange.location < attString.string.length) {
+        searchRange.length = attString.string.length-searchRange.location;
+        foundRange = [attString.string rangeOfString:@"<YOUTUBE>.+<YOUTUBE>" options:NSRegularExpressionSearch|NSCaseInsensitiveSearch range:searchRange];
+        if (foundRange.location != NSNotFound) {
+            [attArray addObject:[attString attributedSubstringFromRange:NSMakeRange(searchRange.location, foundRange.location-searchRange.location)]];
+            NSString *gifURL = [attString.string substringWithRange:NSMakeRange(foundRange.location, foundRange.length-9)];
             [attArray addObject:gifURL];
             searchRange.location = foundRange.location+foundRange.length;
         } else {
@@ -115,13 +146,50 @@ static char previousHeightOffsetKey;
     [[NSOperationQueue mainQueue] addOperation:op];
 }
 
+- (void)addYoutubeVideoWithURL:(NSString*)urlString
+{
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, [self.currentOffset intValue], self.frame.size.width, 166)];
+    webView.backgroundColor = [UIColor redColor];
+    webView.scrollView.scrollEnabled = NO;
+    webView.scrollView.bounces = NO;
+    [webView setClipsToBounds:YES];
+    [webView setAllowsInlineMediaPlayback:YES];
+    [webView setMediaPlaybackRequiresUserAction:YES];
+    
+    [self addSubview:webView];
+    
+    NSString* embedHTML = [NSString stringWithFormat:@"\
+                           <html>\
+                           <body style='margin:0px;padding:0px;'>\
+                           <script type='text/javascript' src='http://www.youtube.com/iframe_api'></script>\
+                           <script type='text/javascript'>\
+                           function onYouTubeIframeAPIReady()\
+                           {\
+                           ytplayer=new YT.Player('playerId',{events:{onReady:onPlayerReady}})\
+                           }\
+                           function onPlayerReady(a)\
+                           { \
+                           a.target.playVideo(); \
+                           }\
+                           </script>\
+                           <iframe id='playerId' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=0&rel=0&playsinline=1&autoplay=0' frameborder='0'>\
+                           </body>\
+                           </html>", 250, 166, urlString];
+    [webView loadHTMLString:embedHTML baseURL:[[NSBundle mainBundle] resourceURL]];
+    [self.imageViewArray addObject:webView];
+    [self addNewExclusionPathForImageView:webView];
+    self.currentOffset = @([self.currentOffset intValue] + webView.frame.size.height);
+
+}
+
+
 /**
  *  Add new exclusion path to the text view.
  *  We add a exclusion path for each GIF we want to show.
  */
-- (void)addNewExclusionPathForImageView:(UIImageView*)imageView
+- (void)addNewExclusionPathForImageView:(UIView*)view
 {
-    UIBezierPath * imgRect = [UIBezierPath bezierPathWithRect:imageView.frame];
+    UIBezierPath * imgRect = [UIBezierPath bezierPathWithRect:view.frame];
     NSMutableArray *exclusionPaths = [self.textContainer.exclusionPaths mutableCopy];
     if (!exclusionPaths) {
         exclusionPaths = [@[] mutableCopy];

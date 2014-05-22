@@ -36,6 +36,10 @@ static  NSString *kBoldItalicFont  = @"OpenSans-BoldItalic";
             attString = [[NSAttributedString alloc] initWithString:gifString attributes:@{}];
         }
     }
+    else if (anElement.type == MMElementTypeYoutubeVideo) {
+        NSString *youtubeString = [NSString stringWithFormat:@"<YOUTUBE>%@<YOUTUBE>",anElement.title];
+        attString = [[NSAttributedString alloc] initWithString:youtubeString attributes:@{}];
+    }
     switch (anElement.type)
     {
         case MMElementTypeHeader:
@@ -90,7 +94,8 @@ static  NSString *kBoldItalicFont  = @"OpenSans-BoldItalic";
                 return [[NSAttributedString alloc] initWithString:anElement.title attributes:@{NSLinkAttributeName:anElement.href}];
             }
             return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
-            
+        case MMElementTypeYoutubeVideo:
+            return attString;
         default:
             return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
     }

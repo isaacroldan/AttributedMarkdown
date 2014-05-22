@@ -247,7 +247,7 @@ static NSString *__delimitersForCharacter(unichar character)
     NSUInteger current = self.location;
     
     //Redbooth urls have a !, to avoid conflicts, return 0 if we detect a url
-    if ([self baseURLInRange:searchRange]) {
+    if ([self baseURLInRange:searchRange] || [self youtubeURLInRange:searchRange]) {
         return 0;
     }
     
@@ -265,8 +265,17 @@ static NSString *__delimitersForCharacter(unichar character)
 
 - (BOOL)baseURLInRange:(NSRange)range
 {
-    if (range.location+range.length<self.string.length) {
+    if (range.location+range.length<=self.string.length) {
         NSRange baseRange = [self.string rangeOfString:self.baseURL options:NSCaseInsensitiveSearch range:range];
+        return (baseRange.location != NSNotFound);
+    }
+    return NO;
+}
+
+- (BOOL)youtubeURLInRange:(NSRange)range
+{
+    if (range.location+range.length<=self.string.length) {
+        NSRange baseRange = [self.string rangeOfString:@"youtube" options:NSCaseInsensitiveSearch range:range];
         return (baseRange.location != NSNotFound);
     }
     return NO;
