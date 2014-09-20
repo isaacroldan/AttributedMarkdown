@@ -39,6 +39,7 @@ typedef enum
     MMElementTypeHorizontalRule,
     MMElementTypeHTML,
     MMElementTypeLineBreak,
+    MMElementTypeStrikethrough,
     MMElementTypeStrong,
     MMElementTypeEm,
     MMElementTypeCodeSpan,
@@ -47,10 +48,20 @@ typedef enum
     MMElementTypeMailTo,
     MMElementTypeDefinition,
     MMElementTypeEntity,
-    MMElementTypeMention,
-    MMElementTypeRedboothLink,
-    MMElementTypeYoutubeVideo
+    MMElementTypeTable,
+    MMElementTypeTableHeader,
+    MMElementTypeTableHeaderCell,
+    MMElementTypeTableRow,
+    MMElementTypeTableRowCell,
 } MMElementType;
+
+typedef NS_ENUM(NSInteger, MMTableCellAlignment)
+{
+    MMTableCellAlignmentNone,
+    MMTableCellAlignmentLeft,
+    MMTableCellAlignmentCenter,
+    MMTableCellAlignmentRight,
+};
 
 @interface MMElement : NSObject
 
@@ -58,6 +69,7 @@ typedef enum
 @property (assign, nonatomic) MMElementType  type;
 @property (copy,   nonatomic) NSArray       *innerRanges;
 
+@property (assign, nonatomic) MMTableCellAlignment alignment;
 @property (assign, nonatomic) NSUInteger     level;
 @property (copy,   nonatomic) NSString      *href;
 @property (copy,   nonatomic) NSString      *title;

@@ -26,10 +26,14 @@
 #import <Foundation/Foundation.h>
 
 
+#import "MMMarkdown.h"
+
 @class MMDocument;
 
 @interface MMParser : NSObject
 
-- (MMDocument *)parseMarkdown:(NSString *)markdown baseURL:(NSString*)baseURL error:(__autoreleasing NSError **)error;
+- (id)initWithExtensions:(MMMarkdownExtensions)extensions;
+
+- (MMDocument *)parseMarkdown:(NSString *)markdown error:(__autoreleasing NSError **)error;
 
 @end

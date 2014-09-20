@@ -35,18 +35,15 @@
 // Changing
 @property (assign, nonatomic, readonly) NSUInteger startLocation;
 @property (assign, nonatomic, readonly) NSRange    currentRange;
-@property (strong, nonatomic) NSString *baseURL;
 
 // Settable
 @property (assign, nonatomic) NSUInteger location;
 
 + (id)scannerWithString:(NSString *)aString;
 - (id)initWithString:(NSString *)aString;
-+ (id)scannerWithString:(NSString *)aString andBaseURL:(NSString*)baseURL;
 
 + (id)scannerWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges;
 - (id)initWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges;
-+ (id)scannerWithString:(NSString *)aString lineRanges:(NSArray *)theLineRanges baseURL:(NSString*)baseURL;
 
 - (void)beginTransaction;
 - (void)commitTransaction:(BOOL)shouldSave;
@@ -57,10 +54,14 @@
 
 - (unichar)previousCharacter;
 - (unichar)nextCharacter;
+
+- (NSString *)previousWord;
 - (NSString *)nextWord;
 
+- (NSString *)previousWordWithCharactersFromSet:(NSCharacterSet *)set;
+- (NSString *)nextWordWithCharactersFromSet:(NSCharacterSet *)set;
+
 - (void)advance;
-- (void)goBack;
 - (void)advanceToNextLine;
 
 - (BOOL)matchString:(NSString *)string;

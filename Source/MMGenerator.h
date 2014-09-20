@@ -30,6 +30,6 @@
 
 @interface MMGenerator : NSObject
 
-- (NSMutableAttributedString *)generateHTML:(MMDocument *)aDocument;
+- (NSString *)generateHTML:(MMDocument *)aDocument;
 
 @end

@@ -52,6 +52,8 @@ static NSString * __MMStringFromElementType(MMElementType type)
             return @"html";
         case MMElementTypeLineBreak:
             return @"br";
+        case MMElementTypeStrikethrough:
+            return @"del";
         case MMElementTypeStrong:
             return @"strong";
         case MMElementTypeEm:
@@ -68,12 +70,6 @@ static NSString * __MMStringFromElementType(MMElementType type)
             return @"entity";
         case MMElementTypeDefinition:
             return @"definition";
-        case MMElementTypeMention:
-            return @"mention";
-        case MMElementTypeRedboothLink:
-            return @"redboothLink";
-        case MMElementTypeYoutubeVideo:
-            return @"youtubeVideo";
         default:
             return @"unknown";
     }
@@ -85,10 +81,7 @@ static NSString * __MMStringFromElementType(MMElementType type)
     NSMutableArray *_children;
 }
 
-//==================================================================================================
-#pragma mark -
-#pragma mark NSObject Methods
-//==================================================================================================
+#pragma mark - NSObject
 
 - (id)init
 {
@@ -111,15 +104,12 @@ static NSString * __MMStringFromElementType(MMElementType type)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p; type=%@; range=%@>",
-            NSStringFromClass([self class]), self, __MMStringFromElementType(self.type), NSStringFromRange(self.range)];
+            NSStringFromClass(self.class), self, __MMStringFromElementType(self.type), NSStringFromRange(self.range)];
             
 }
 
 
-//==================================================================================================
-#pragma mark -
-#pragma mark Public Methods
-//==================================================================================================
+#pragma mark - Public Methods
 
 - (void)addInnerRange:(NSRange)aRange
 {
@@ -159,10 +149,7 @@ static NSString * __MMStringFromElementType(MMElementType type)
 }
 
 
-//==================================================================================================
-#pragma mark -
-#pragma mark Public Properties
-//==================================================================================================
+#pragma mark - Public Properties
 
 - (void)setInnerRanges:(NSArray *)innerRanges
 {
