@@ -8,249 +8,272 @@
 
 #import "MMAttributesHelper.h"
 #import "MMElement.h"
+#import <CoreText/CoreText.h>
+#import "MMMarkdownStyleSheet.h"
 
-static  NSString *kNormalFont      = @"OpenSans";
-static  NSString *kBoldFont        = @"OpenSans-Bold";
-static  NSString *kLightFont       = @"OpenSans-Light";
-static  NSString *kSemiboldFont    = @"OpenSans-Semibold";
-static  NSString *kItalicFont      = @"OpenSans-Italic";
-static  NSString *kBoldItalicFont  = @"OpenSans-BoldItalic";
+#define emptyAttributedString [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
+#define spaceAttributedString [[NSAttributedString alloc] initWithString:@" " attributes:@{}];
+
 
 @implementation MMAttributesHelper
 
-+ (NSAttributedString *)startStringForElement:(MMElement *)anElement listType:(NSString *)listType
++ (NSAttributedString *)startStringForElement:(MMElement *)anElement listType:(NSString *)listType nestedStyles:(NSMutableArray *)nestedStyles
 {
     
     NSAttributedString *attString;
     if (anElement.type == MMElementTypeImage) {
-        if  (![[[anElement.href componentsSeparatedByString:@"."] lastObject] isEqualToString:@"gif"]) {
-            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:anElement.href]];
-            UIImage *image = [UIImage imageWithData:data];
-            NSTextAttachment *att = [[NSTextAttachment alloc] init];
-            int width = image.size.width < 250 ? image.size.width : 250;
-            att.bounds = CGRectMake(50, 0, width, image.size.height*width/image.size.width);
-            attString = [NSAttributedString attributedStringWithAttachment:att];
-        }
-        else {
-            NSString *gifString = [NSString stringWithFormat:@"<GIF>%@<GIF>",anElement.href];
-            attString = [[NSAttributedString alloc] initWithString:gifString attributes:@{}];
-        }
+        NSString *gifString = [NSString stringWithFormat:@"<IMAGE>%@<IMAGE>",anElement.href];
+        attString = [[NSAttributedString alloc] initWithString:gifString attributes:@{}];
     }
     else if (anElement.type == MMElementTypeYoutubeVideo) {
-        NSString *youtubeString = [NSString stringWithFormat:@"<YOUTUBE>%@<YOUTUBE>",anElement.title];
+        NSString *youtubeString = [NSString stringWithFormat:@"<YOUTUBE>%@<YOUTUBE>",anElement.href];
         attString = [[NSAttributedString alloc] initWithString:youtubeString attributes:@{}];
     }
-    switch (anElement.type)
-    {
-        case MMElementTypeHeader:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
-        case MMElementTypeParagraph:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<p>";
-        case MMElementTypeBulletedList:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<ul>\n";
-        case MMElementTypeNumberedList:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<ol>\n";
-        case MMElementTypeListItem:
-            if ([listType isEqualToString:@"- "] || [listType isEqualToString:@"* "] || [listType isEqualToString:@"+ "] ) {
-                listType = @"  • ";
-                return [[NSAttributedString alloc] initWithString:listType  attributes:@{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:25],
-                                                                                          NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                                                                                          //NSBaselineOffsetAttributeName:@1
-                                                                                          }];//@"<li>";
-            }
-            else {
-                listType = [NSString stringWithFormat:@"  %@ ",listType];
-                return [[NSAttributedString alloc] initWithString:listType  attributes:[self attributesDictionaryForElement:anElement nestedStyles:nil]];//@"<li>";
-            }
+    
+    NSMutableAttributedString *auxString;
+    NSMutableDictionary *attributesDictionary;
+    switch (anElement.type) {
+        case MMElementTypeListItem: //@"<li>";
+                listType = anElement.title;
+            attributesDictionary = [self attributesDictionaryForElement:anElement nestedStyles:nil];
+            [attributesDictionary setObject:[self paragraphStyleForElement:anElement startString:YES nestedStyles:nestedStyles] forKey:NSParagraphStyleAttributeName];
+            return [[NSAttributedString alloc] initWithString:anElement.title attributes:attributesDictionary];
             
-            
-        case MMElementTypeBlockquote:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<blockquote>\n";
-        case MMElementTypeCodeBlock:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<pre><code>";
-        case MMElementTypeLineBreak:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<br />";
-        case MMElementTypeHorizontalRule:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"\n<hr />\n";
-        case MMElementTypeStrong:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<strong>";
-        case MMElementTypeEm:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<em>";
-        case MMElementTypeCodeSpan:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
-        case MMElementTypeImage:
-            return attString;
-            //return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
-        case MMElementTypeLink:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
-        case MMElementTypeMailTo:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];//@"<code>";
         case MMElementTypeEntity:
             return [[NSAttributedString alloc] initWithString:anElement.stringValue attributes:@{}];
+        
         case MMElementTypeMention:
-            return [[NSAttributedString alloc] initWithString:@" " attributes:@{}];
-        case MMElementTypeRedboothLink:
-            if (anElement.title) {
-                return [[NSAttributedString alloc] initWithString:anElement.title attributes:@{NSLinkAttributeName:anElement.href}];
+            if (anElement.title) { //The title should have the Full Name of the User
+                return [[NSAttributedString alloc] initWithString:anElement.title attributes:[self attributesDictionaryForElement:anElement nestedStyles:nil]];
             }
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
+            return emptyAttributedString;
+        
+        case MMElementTypeRedboothLink:
+            return [[NSAttributedString alloc] initWithString:anElement.title attributes:[self attributesDictionaryForElement:anElement nestedStyles:nil]];
+        
         case MMElementTypeYoutubeVideo:
+        case MMElementTypeImage:
             return attString;
+            
+        case MMElementTypeCodeSpan: //@"<code>"
+            auxString = [[NSMutableAttributedString alloc] initWithString:@"\u00A0" attributes:@{}];
+            [auxString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\u00A0" attributes:[self attributesDictionaryForElement:anElement nestedStyles:nil]]];
+            return auxString;
+
+        case MMElementTypeCodeBlock: //@"<pre><code>"
+        case MMElementTypeBlockquote: //@"<blockquote>
+        case MMElementTypeParagraph: //@"<p>";
+        case MMElementTypeHeader:
+        case MMElementTypeBulletedList: //@"<ul>"
+        case MMElementTypeNumberedList: //@"<ol>
+        case MMElementTypeLineBreak: //@"<br />
+        case MMElementTypeHorizontalRule: //@"\n<hr />"
+        case MMElementTypeStrong: //@"<strong>"
+        case MMElementTypeEm: //@"<em>"
+        case MMElementTypeLink:
+        case MMElementTypeMailTo:
         default:
-            return [[NSAttributedString alloc] initWithString:@"" attributes:@{}];
+            return emptyAttributedString
     }
 }
 
-+ (NSString *)endStringForElement:(MMElement *)anElement
++ (NSAttributedString *)endStringForElement:(MMElement *)anElement nestedStyles:(NSMutableArray *)nestedStyles
 {
+    NSMutableAttributedString *auxString;
     switch (anElement.type)
     {
-        case MMElementTypeHeader:
-            return [NSString stringWithFormat:@"\n"];
         case MMElementTypeParagraph:
-            return @"\n\n";
-        case MMElementTypeBulletedList:
-            return @"\n";
-        case MMElementTypeNumberedList:
-            return @"\n";
-        case MMElementTypeListItem:
-            return @"\n";
-        case MMElementTypeBlockquote:
-            return @"\n";
         case MMElementTypeCodeBlock:
-            return @"\n";
-        case MMElementTypeStrong:
-            return @"";
-        case MMElementTypeEm:
-            return @"";
+            return [[NSAttributedString alloc] initWithString:@"\n\n" attributes:@{}];
+        case MMElementTypeListItem:
+        case MMElementTypeHeader:
+        case MMElementTypeBulletedList:
+        case MMElementTypeNumberedList:
+        case MMElementTypeBlockquote:
+            return [[NSAttributedString alloc] initWithString:@"\n" attributes:@{}];
         case MMElementTypeCodeSpan:
-            return @"";
+            auxString = [[NSMutableAttributedString alloc] initWithString:@"\u00A0" attributes:[self attributesDictionaryForElement:anElement nestedStyles:nil]];
+            [auxString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\u00A0\u00A0" attributes:@{}]];
+            return auxString;
+        case MMElementTypeStrong:
+        case MMElementTypeEm:
         case MMElementTypeLink:
-            return @"";
         case MMElementTypeMention:
-            return @" ";
         default:
-            return @"";
+            return emptyAttributedString
     }
 }
 
 + (NSDictionary *)attributesDictionaryForElement:(MMElement *)anElement nestedStyles:(NSMutableArray *)nestedStyles
 {
-    NSMutableDictionary *dictionary = [@{} mutableCopy];
-    switch (anElement.type)
-    {
+    NSMutableDictionary *attributesDictionary = [NSMutableDictionary new];
+    NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleForElement:anElement startString:NO nestedStyles:nestedStyles];
+    
+    //Most common attributes
+    [attributesDictionary setObject:mm_Color_Paragraph forKey:NSForegroundColorAttributeName];
+    [attributesDictionary setObject:mm_Font_mainFont forKey:NSFontAttributeName];
+    [attributesDictionary setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+    [attributesDictionary setObject:@(anElement.type) forKey:@"ElementType"];
+
+    switch (anElement.type) {
         case MMElementTypeHeader:
             switch (anElement.level) {
                 case 1:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kSemiboldFont size:20],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.27 green:0.27 blue:0.27 alpha:1],
-                             NSBaselineOffsetAttributeName:@10
-                             };
+                    [attributesDictionary setObject:mm_Font_Semibold_Big forKey:NSFontAttributeName];
+                    [attributesDictionary setObject:mm_Color_DarkGrey69 forKey:NSForegroundColorAttributeName];
+                    [attributesDictionary setObject:mm_Baseline_Offset_Medium forKey:NSBaselineOffsetAttributeName];
+                    return attributesDictionary;
                 case 2:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kSemiboldFont size:16],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                             NSBaselineOffsetAttributeName:@10
-                             };
+                    [attributesDictionary setObject:mm_Font_Semibold_Medium forKey:NSFontAttributeName];
+                    [attributesDictionary setObject:mm_Baseline_Offset_Medium forKey:NSBaselineOffsetAttributeName];
+                    return attributesDictionary;
                 case 3:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kSemiboldFont size:13],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                             NSBaselineOffsetAttributeName:@15
-                             };
+                    [attributesDictionary setObject:mm_Font_Semibold_Normal forKey:NSFontAttributeName];
+                    [attributesDictionary setObject:mm_Baseline_Offset_Big forKey:NSBaselineOffsetAttributeName];
+                    return attributesDictionary;
                 case 4:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kItalicFont size:13],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                             NSBaselineOffsetAttributeName:@15
-                             };
                 case 5:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kItalicFont size:13],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                             NSBaselineOffsetAttributeName:@15
-                             };
                 case 6:
-                    return @{NSFontAttributeName:[UIFont fontWithName:kItalicFont size:13],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                             NSBaselineOffsetAttributeName:@15
-                             };
+                    [attributesDictionary setObject:mm_Font_Italic_Normal forKey:NSFontAttributeName];
+                    [attributesDictionary setObject:mm_Baseline_Offset_Big forKey:NSBaselineOffsetAttributeName];
+                    return attributesDictionary;
                 default:
                     break;
             }
             
         case MMElementTypeParagraph:
-            if (nestedStyles.count > 1) {
-                if ([nestedStyles containsObject:@(MMElementTypeBlockquote)]) {
-                    return @{NSFontAttributeName:[UIFont fontWithName:kItalicFont size:13],
-                             NSForegroundColorAttributeName:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1]};
-                }
+            if (nestedStyles.count > 1 && [nestedStyles containsObject:@(MMElementTypeBlockquote)]) {
+                [attributesDictionary setObject:mm_Font_Italic_Normal forKey:NSFontAttributeName];
+                [attributesDictionary setObject:mm_Color_White forKey:NSBackgroundColorAttributeName];
+                [attributesDictionary setObject:mm_Color_LightGrey238 forKey:@"BackgroundBorderColor"];
+                [attributesDictionary setObject:@(MMElementTypeBlockquote) forKey:@"ElementType"];
             }
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1]};
+            return attributesDictionary;
+            
         case MMElementTypeBulletedList:
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                     //NSBaselineOffsetAttributeName:@8
-                     };
         case MMElementTypeNumberedList:
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                     NSBaselineOffsetAttributeName:@8
-                     };
         case MMElementTypeListItem:
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1],
-                     NSBaselineOffsetAttributeName:@6
-                     };
+            return attributesDictionary;
+
         case MMElementTypeBlockquote:
-            return @{NSFontAttributeName:[UIFont fontWithName:kItalicFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1]};
+            [attributesDictionary setObject:mm_Font_Italic_Normal forKey:NSFontAttributeName];
+            [attributesDictionary setObject:mm_Color_White forKey:NSBackgroundColorAttributeName];
+            [attributesDictionary setObject:mm_Color_LightGrey238 forKey:@"BackgroundBorderColor"];
+            return attributesDictionary;
+            
         case MMElementTypeCodeBlock:
-            return @{NSFontAttributeName:[UIFont fontWithName:@"Courier" size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1]};
+            [attributesDictionary setObject:mm_Font_Monospace_Normal forKey:NSFontAttributeName];
+            [attributesDictionary setObject:mm_Color_LightGrey250 forKey:NSBackgroundColorAttributeName];
+            [attributesDictionary setObject:mm_Color_LightGrey230 forKey:@"BackgroundBorderColor"];
+            return attributesDictionary;
+            
         case MMElementTypeStrong:
-            [dictionary setObject:[UIFont fontWithName:kBoldFont size:13] forKey:NSFontAttributeName];
-            [dictionary setObject:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1] forKey:NSForegroundColorAttributeName];
+            [attributesDictionary setObject:mm_Font_Bold_Normal forKey:NSFontAttributeName];
+            [attributesDictionary setObject:mm_Color_DarkGrey51 forKey:NSForegroundColorAttributeName];
             
             if ([nestedStyles containsObject:@(MMElementTypeEm)] || [nestedStyles containsObject:@(MMElementTypeBlockquote)] ) {
-                [dictionary setObject:[UIFont fontWithName:kBoldItalicFont size:13] forKey:NSFontAttributeName];
+                [attributesDictionary setObject:mm_Font_BoldItalic_Normal forKey:NSFontAttributeName];
             }
             if ([nestedStyles containsObject:@(MMElementTypeListItem)]) {
-                [dictionary setObject:@6 forKey:NSBaselineOffsetAttributeName];
-                [dictionary setObject:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1] forKey:NSForegroundColorAttributeName];
+                [attributesDictionary setObject:mm_Color_Paragraph forKey:NSForegroundColorAttributeName];
             }
-            return dictionary;
+            return attributesDictionary;
+            
         case MMElementTypeEm:
-            [dictionary setObject:[UIFont fontWithName:kItalicFont size:13] forKey:NSFontAttributeName];
-            [dictionary setObject:[UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1] forKey:NSForegroundColorAttributeName];
+            [attributesDictionary setObject:mm_Font_Italic_Normal forKey:NSFontAttributeName];
+            [attributesDictionary setObject:mm_Color_DarkGrey51 forKey:NSForegroundColorAttributeName];
             
             if ([nestedStyles containsObject:@(MMElementTypeStrong)]) {
-                [dictionary setObject:[UIFont fontWithName:kBoldItalicFont size:13] forKey:NSFontAttributeName];
+                [attributesDictionary setObject:mm_Font_BoldItalic_Normal forKey:NSFontAttributeName];
             }
             if ([nestedStyles containsObject:@(MMElementTypeListItem)]) {
-                [dictionary setObject:@6 forKey:NSBaselineOffsetAttributeName];
-                [dictionary setObject:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1] forKey:NSForegroundColorAttributeName];
+                [attributesDictionary setObject:mm_Color_Paragraph forKey:NSForegroundColorAttributeName];
             }
-            return dictionary;
+            return attributesDictionary;
+            
         case MMElementTypeCodeSpan:
-            return @{NSFontAttributeName:[UIFont fontWithName:@"Courier" size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1]};
+            [attributesDictionary setObject:mm_Font_Monospace_Normal forKey:NSFontAttributeName];
+            [attributesDictionary setObject:mm_Color_LightGrey250 forKey:NSBackgroundColorAttributeName];
+            [attributesDictionary setObject:mm_Color_LightGrey230 forKey:@"BackgroundBorderColor"];
+            return attributesDictionary;
+            
         case MMElementTypeRedboothLink:
+            [attributesDictionary setObject:mm_Color_BlueMention_Foreground forKey:NSForegroundColorAttributeName];
+            [attributesDictionary setObject:mm_Color_BlueMention_Background forKey:NSBackgroundColorAttributeName];
+            [attributesDictionary setObject:anElement.href forKey:NSLinkAttributeName];
+            return attributesDictionary;
+            
         case MMElementTypeLink:
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.13 green:0.65 blue:0.72 alpha:1],
-                     NSLinkAttributeName:anElement.href};
+            [attributesDictionary setObject:mm_Color_BlueLink forKey:NSForegroundColorAttributeName];
+            //[attributesDictionary setObject:anElement.href forKey:NSLinkAttributeName];
+            return attributesDictionary;
+
         case MMElementTypeMention:
-            [dictionary setObject:[UIFont fontWithName:kNormalFont size:13] forKey:NSFontAttributeName];
-            [dictionary setObject:[UIColor colorWithRed:1/255.0f green:118/255.0f blue:119/255.0f alpha:1.0f] forKey:NSForegroundColorAttributeName];
-            //[dictionary setObject:[UIColor colorWithRed:0.827 green:0.925 blue:0.941 alpha:1] forKey:NSBackgroundColorAttributeName];
-            if ([nestedStyles containsObject:@(MMElementTypeListItem)]) {
-                [dictionary setObject:@6 forKey:NSBaselineOffsetAttributeName];
-            }
-            return dictionary;
+            [attributesDictionary setObject:mm_Color_BlueMention_Foreground forKey:NSForegroundColorAttributeName];
+            [attributesDictionary setObject:mm_Color_BlueMention_Background forKey:NSBackgroundColorAttributeName];
+            [attributesDictionary setObject:anElement.href forKey:NSLinkAttributeName];
+            return attributesDictionary;
+            
         default:
-            return @{NSFontAttributeName:[UIFont fontWithName:kNormalFont size:13],
-                     NSForegroundColorAttributeName:[UIColor colorWithRed:0.44 green:0.44 blue:0.44 alpha:1]};
+            return attributesDictionary;
     }
 }
 
++ (NSMutableParagraphStyle*)paragraphStyleForElement:(MMElement*)element startString:(BOOL)isStartString nestedStyles:(NSMutableArray*)nestedStyles
+{
+    //Common styles
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.paragraphSpacingBefore = 0.0;
+    paragraphStyle.paragraphSpacing = 0.0;
+    paragraphStyle.headIndent = 0.0;
+    paragraphStyle.tailIndent = 0.0;
+    paragraphStyle.lineHeightMultiple = 0.0;
+    paragraphStyle.lineSpacing = 4;
+    paragraphStyle.minimumLineHeight = 0.0;
+    paragraphStyle.maximumLineHeight = 0.0;
+    paragraphStyle.alignment = 4;
+    paragraphStyle.baseWritingDirection = -1;
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
 
+    switch (element.type) {
+        case MMElementTypeListItem:
+            if (isStartString) {
+                paragraphStyle.defaultTabInterval = 100;
+                paragraphStyle.firstLineHeadIndent = 13;
+                paragraphStyle.headIndent = 27.0;
+            }
+            else {
+                paragraphStyle.defaultTabInterval = 36.0;
+                paragraphStyle.firstLineHeadIndent = 27.0;
+                paragraphStyle.lineSpacing = 0;
+                paragraphStyle.headIndent = 27.0;
+            }
+            paragraphStyle.paragraphSpacing = 5;
+            break;
+        case MMElementTypeBlockquote:
+            paragraphStyle.headIndent = 18;
+            paragraphStyle.firstLineHeadIndent = 18;
+            break;
+        case MMElementTypeParagraph:
+            if (nestedStyles.count > 1 && [nestedStyles containsObject:@(MMElementTypeBlockquote)]) {
+                paragraphStyle.headIndent = 18;
+                paragraphStyle.firstLineHeadIndent = 18;
+            }
+            break;
+        case MMElementTypeCodeBlock:
+            paragraphStyle.headIndent = 14;
+            paragraphStyle.firstLineHeadIndent = 14;
+            paragraphStyle.tailIndent = -14;
+            break;
+        case MMElementTypeCodeSpan:
+            paragraphStyle.headIndent = 10;
+            paragraphStyle.firstLineHeadIndent = 10;
+            break;
+        default:
+            break;
+    }
+    
+    return paragraphStyle;
+}
 
 @end

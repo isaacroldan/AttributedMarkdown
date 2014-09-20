@@ -33,42 +33,43 @@
 
 #pragma mark - Public Methods
 
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error
 {
-    return [self HTMLStringWithMarkdown:string extensions:MMMarkdownExtensionsNone fromSelector:_cmd error:error];
+    return [self attributedStringWithMarkdown:string extensions:MMMarkdownExtensionsNone fromSelector:_cmd error:error attributedDelegate:nil];
 }
 
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string extensions:(MMMarkdownExtensions)extensions error:(NSError *__autoreleasing *)error
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string extensions:(MMMarkdownExtensions)extensions error:(NSError *__autoreleasing *)error
 {
-    return [self HTMLStringWithMarkdown:string extensions:extensions fromSelector:_cmd error:error];
+    return [self attributedStringWithMarkdown:string extensions:extensions fromSelector:_cmd error:error attributedDelegate:nil];
 }
 
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string attributesDelegate:(id)delegate extensions:(MMMarkdownExtensions)extensions error:(NSError *__autoreleasing *)error
+{
+    return [self attributedStringWithMarkdown:string extensions:extensions fromSelector:_cmd error:error attributedDelegate:nil];
+}
 
 #pragma mark - Private Methods
 
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string
-                          extensions:(MMMarkdownExtensions)extensions
-                        fromSelector:(SEL)selector
-                               error:(__autoreleasing NSError **)error
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string
+                                          extensions:(MMMarkdownExtensions)extensions
+                                        fromSelector:(SEL)selector
+                                               error:(__autoreleasing NSError **)error
+                                  attributedDelegate:(id<AttributedStringStylesGeneratorDelegate>)delegate
 {
-    if (string == nil)
+    if (string == nil || string.length == 0)
     {
-        NSString *reason = [NSString stringWithFormat:@"[%@ %@]: nil argument for markdown",
-                            NSStringFromClass(self.class), NSStringFromSelector(selector)];
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        return [[NSMutableAttributedString alloc] initWithString:@""];
     }
-    
-    if (string.length == 0)
-        return @"";
     
     MMParser    *parser    = [[MMParser alloc] initWithExtensions:extensions];
     MMGenerator *generator = [MMGenerator new];
+    generator.delegate = delegate;
     
     MMDocument *document = [parser parseMarkdown:string error:error];
     if (!document)
         return nil;
     
-    return [generator generateHTML:document];
+    return [generator generateAttributedString:document];
 }
 
 

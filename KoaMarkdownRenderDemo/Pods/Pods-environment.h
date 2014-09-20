@@ -48,3 +48,27 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 2
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 4
 
+// SDWebImage
+#define COCOAPODS_POD_AVAILABLE_SDWebImage
+#define COCOAPODS_VERSION_MAJOR_SDWebImage 3
+#define COCOAPODS_VERSION_MINOR_SDWebImage 7
+#define COCOAPODS_VERSION_PATCH_SDWebImage 1
+
+// SDWebImage/Core
+#define COCOAPODS_POD_AVAILABLE_SDWebImage_Core
+#define COCOAPODS_VERSION_MAJOR_SDWebImage_Core 3
+#define COCOAPODS_VERSION_MINOR_SDWebImage_Core 7
+#define COCOAPODS_VERSION_PATCH_SDWebImage_Core 1
+
+// YLGIFImage
+#define COCOAPODS_POD_AVAILABLE_YLGIFImage
+#define COCOAPODS_VERSION_MAJOR_YLGIFImage 0
+#define COCOAPODS_VERSION_MINOR_YLGIFImage 11
+#define COCOAPODS_VERSION_PATCH_YLGIFImage 0
+
+// youtube-ios-player-helper
+#define COCOAPODS_POD_AVAILABLE_youtube_ios_player_helper
+#define COCOAPODS_VERSION_MAJOR_youtube_ios_player_helper 0
+#define COCOAPODS_VERSION_MINOR_youtube_ios_player_helper 1
+#define COCOAPODS_VERSION_PATCH_youtube_ios_player_helper 1
+

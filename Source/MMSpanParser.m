@@ -197,6 +197,12 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
 {
     MMElement *element;
     
+    [scanner beginTransaction];
+    element = [self _parseMentionWithScanner:scanner];
+    [scanner commitTransaction:element != nil];
+    if (element)
+        return element;
+    
     if (self.extensions & MMMarkdownExtensionsStrikethroughs)
     {
         [scanner beginTransaction];
@@ -305,6 +311,70 @@ static NSString * const ESCAPABLE_CHARS = @"\\`*_{}[]()#+-.!>";
     
     return nil;
 }
+
+/**
+ *  Parses custom mentions and links with the format '@[title](link)'
+ *  Use it for your own elements like mentions or internal links.
+ */
+- (MMElement *)_parseMentionWithScanner:(MMScanner *)scanner
+{
+    unichar character = [scanner nextCharacter];
+    if (character != '@')
+        return nil;
+    [scanner advance];
+    NSCharacterSet *boringChars;
+    NSUInteger      level;
+    
+    MMElement *element = [MMElement new];
+    element.type  = MMElementTypeMention;
+    NSUInteger titleLocation = NSNotFound;
+    NSUInteger titleEnd      = NSNotFound;
+    // Find the []
+    titleLocation = scanner.location+1;
+    element.innerRanges = [self _parseLinkTextBodyWithScanner:scanner];
+    if (!element.innerRanges)
+        return nil;
+    titleEnd = scanner.location-1;
+    // Find the ()
+    if ([scanner nextCharacter] != '(')
+        return nil;
+    [scanner advance];
+    
+    NSUInteger      urlLocation = scanner.location;
+    NSUInteger      urlEnd      = urlLocation;
+    boringChars = [[NSCharacterSet characterSetWithCharactersInString:@"()\\ \t"] invertedSet];
+    level       = 1;
+    while (level > 0)
+    {
+        [scanner skipCharactersFromSet:boringChars];
+        if ([scanner atEndOfLine])
+            return nil;
+        urlEnd = scanner.location;
+        
+        unichar character = [scanner nextCharacter];
+        if (character == ')')
+        {
+            level -= 1;
+        }
+        urlEnd = scanner.location;
+        [scanner advance];
+    }
+    
+    
+    NSRange   urlRange = NSMakeRange(urlLocation, urlEnd-urlLocation);
+    NSString *href     = [scanner.string substringWithRange:urlRange];
+    
+    element.range = NSMakeRange(scanner.startLocation, scanner.location-scanner.startLocation);
+    element.href  = [self _stringWithBackslashEscapesRemoved:href];
+    element.title = [scanner.string substringWithRange:NSMakeRange(titleLocation, titleEnd-titleLocation)];
+    
+    if ([element.title isEqualToString:@"YOUTUBE_VIDEO"]) {
+        element.type = MMElementTypeYoutubeVideo;
+    }
+    
+    return element;
+}
+
 
 - (BOOL)_parseAutolinkDomainWithScanner:(MMScanner *)scanner
 {

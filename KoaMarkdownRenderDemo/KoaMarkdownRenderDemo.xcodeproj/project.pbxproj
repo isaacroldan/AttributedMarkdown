@@ -9,11 +9,7 @@
 /* Begin PBXBuildFile section */
 		6A1B5C86192CDFC600195E29 /* AnimatedGIFImageSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1B5C85192CDFC600195E29 /* AnimatedGIFImageSerialization.m */; };
 		6A1B5C89192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1B5C88192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.m */; };
-		6A1B5C8C192D12B300195E29 /* UITextView+Gifs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A1B5C8B192D12B300195E29 /* UITextView+Gifs.m */; };
 		6A28A1AB192CC60600E209BE /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 6A28A1AA192CC60600E209BE /* Podfile */; };
-		6A28A1AD192CC7CB00E209BE /* placeholder.gif in Resources */ = {isa = PBXBuildFile; fileRef = 6A28A1AC192CC7CB00E209BE /* placeholder.gif */; };
-		6A28A1B8192CDBF800E209BE /* YLGIFImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A28A1B5192CDBF800E209BE /* YLGIFImage.m */; };
-		6A28A1B9192CDBF800E209BE /* YLImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A28A1B7192CDBF800E209BE /* YLImageView.m */; };
 		6A2A9C6819267CCE00821F5B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2A9C6719267CCE00821F5B /* Foundation.framework */; };
 		6A2A9C6A19267CCE00821F5B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2A9C6919267CCE00821F5B /* CoreGraphics.framework */; };
 		6A2A9C6C19267CCE00821F5B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2A9C6B19267CCE00821F5B /* UIKit.framework */; };
@@ -28,6 +24,10 @@
 		6A2A9C8919267CCE00821F5B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A2A9C6B19267CCE00821F5B /* UIKit.framework */; };
 		6A2A9C9119267CCE00821F5B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6A2A9C8F19267CCE00821F5B /* InfoPlist.strings */; };
 		6A2A9C9319267CCE00821F5B /* KoaMarkdownRenderDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A2A9C9219267CCE00821F5B /* KoaMarkdownRenderDemoTests.m */; };
+		6A59EF7E19CE0E9C009F0F7C /* NSString+RBMarkdown.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A59EF7D19CE0E9C009F0F7C /* NSString+RBMarkdown.m */; };
+		6A59EF8119CE0F60009F0F7C /* NSString+Emojize.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A59EF8019CE0F60009F0F7C /* NSString+Emojize.m */; };
+		6A59EF8419CE10A5009F0F7C /* RBMagicTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A59EF8319CE10A5009F0F7C /* RBMagicTextView.m */; };
+		6A59EF8719CE127A009F0F7C /* RBLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A59EF8619CE127A009F0F7C /* RBLayoutManager.m */; };
 		6A6A8CAA192A3930006A29BD /* Example.md in Resources */ = {isa = PBXBuildFile; fileRef = 6A6A8CA9192A3930006A29BD /* Example.md */; };
 		6A6A8CBD192A3B14006A29BD /* MMDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A6A8CAD192A3B14006A29BD /* MMDocument.m */; };
 		6A6A8CBE192A3B14006A29BD /* MMElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A6A8CAF192A3B14006A29BD /* MMElement.m */; };
@@ -65,14 +65,7 @@
 		6A1B5C85192CDFC600195E29 /* AnimatedGIFImageSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimatedGIFImageSerialization.m; sourceTree = "<group>"; };
 		6A1B5C87192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VSAnimatedGIFResponseSerializer.h; sourceTree = "<group>"; };
 		6A1B5C88192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VSAnimatedGIFResponseSerializer.m; sourceTree = "<group>"; };
-		6A1B5C8A192D12B300195E29 /* UITextView+Gifs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextView+Gifs.h"; sourceTree = "<group>"; };
-		6A1B5C8B192D12B300195E29 /* UITextView+Gifs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextView+Gifs.m"; sourceTree = "<group>"; };
 		6A28A1AA192CC60600E209BE /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
-		6A28A1AC192CC7CB00E209BE /* placeholder.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = placeholder.gif; sourceTree = "<group>"; };
-		6A28A1B4192CDBF800E209BE /* YLGIFImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLGIFImage.h; sourceTree = "<group>"; };
-		6A28A1B5192CDBF800E209BE /* YLGIFImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLGIFImage.m; sourceTree = "<group>"; };
-		6A28A1B6192CDBF800E209BE /* YLImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YLImageView.h; sourceTree = "<group>"; };
-		6A28A1B7192CDBF800E209BE /* YLImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YLImageView.m; sourceTree = "<group>"; };
 		6A2A9C6419267CCE00821F5B /* KoaMarkdownRenderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KoaMarkdownRenderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A2A9C6719267CCE00821F5B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6A2A9C6919267CCE00821F5B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -92,6 +85,15 @@
 		6A2A9C8E19267CCE00821F5B /* KoaMarkdownRenderDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KoaMarkdownRenderDemoTests-Info.plist"; sourceTree = "<group>"; };
 		6A2A9C9019267CCE00821F5B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6A2A9C9219267CCE00821F5B /* KoaMarkdownRenderDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KoaMarkdownRenderDemoTests.m; sourceTree = "<group>"; };
+		6A59EF7B19CE05D3009F0F7C /* MMMarkdownStyleSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MMMarkdownStyleSheet.h; sourceTree = "<group>"; };
+		6A59EF7C19CE0E3E009F0F7C /* NSString+RBMarkdown.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+RBMarkdown.h"; sourceTree = "<group>"; };
+		6A59EF7D19CE0E9C009F0F7C /* NSString+RBMarkdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RBMarkdown.m"; sourceTree = "<group>"; };
+		6A59EF7F19CE0F60009F0F7C /* NSString+Emojize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Emojize.h"; sourceTree = "<group>"; };
+		6A59EF8019CE0F60009F0F7C /* NSString+Emojize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Emojize.m"; sourceTree = "<group>"; };
+		6A59EF8219CE10A5009F0F7C /* RBMagicTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBMagicTextView.h; sourceTree = "<group>"; };
+		6A59EF8319CE10A5009F0F7C /* RBMagicTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBMagicTextView.m; sourceTree = "<group>"; };
+		6A59EF8519CE127A009F0F7C /* RBLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RBLayoutManager.h; sourceTree = "<group>"; };
+		6A59EF8619CE127A009F0F7C /* RBLayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RBLayoutManager.m; sourceTree = "<group>"; };
 		6A6A8CA9192A3930006A29BD /* Example.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Example.md; sourceTree = "<group>"; };
 		6A6A8CAB192A3B14006A29BD /* MMDocument_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMDocument_Private.h; path = ../../Source/MMDocument_Private.h; sourceTree = "<group>"; };
 		6A6A8CAC192A3B14006A29BD /* MMDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MMDocument.h; path = ../../Source/MMDocument.h; sourceTree = "<group>"; };
@@ -187,12 +189,9 @@
 				6A2A9C7919267CCE00821F5B /* Main.storyboard */,
 				6A2A9C7C19267CCE00821F5B /* KoaViewController.h */,
 				6A2A9C7D19267CCE00821F5B /* KoaViewController.m */,
-				6A1B5C8A192D12B300195E29 /* UITextView+Gifs.h */,
-				6A1B5C8B192D12B300195E29 /* UITextView+Gifs.m */,
-				6A28A1AC192CC7CB00E209BE /* placeholder.gif */,
 				6A6A8CA9192A3930006A29BD /* Example.md */,
 				6A2A9C7F19267CCE00821F5B /* Images.xcassets */,
-				6A6A8CA8192A37C2006A29BD /* KoaMarkdownRender */,
+				6A6A8CA8192A37C2006A29BD /* MMAttributedMarkdown */,
 				6A2A9C6E19267CCE00821F5B /* Supporting Files */,
 			);
 			path = KoaMarkdownRenderDemo;
@@ -205,10 +204,6 @@
 				6A1B5C85192CDFC600195E29 /* AnimatedGIFImageSerialization.m */,
 				6A1B5C87192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.h */,
 				6A1B5C88192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.m */,
-				6A28A1B4192CDBF800E209BE /* YLGIFImage.h */,
-				6A28A1B5192CDBF800E209BE /* YLGIFImage.m */,
-				6A28A1B6192CDBF800E209BE /* YLImageView.h */,
-				6A28A1B7192CDBF800E209BE /* YLImageView.m */,
 				6A28A1AA192CC60600E209BE /* Podfile */,
 				6A6A8CC5192A3B49006A29BD /* Fonts */,
 				6A2A9C6F19267CCE00821F5B /* KoaMarkdownRenderDemo-Info.plist */,
@@ -237,9 +232,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		6A6A8CA8192A37C2006A29BD /* KoaMarkdownRender */ = {
+		6A6A8CA8192A37C2006A29BD /* MMAttributedMarkdown */ = {
 			isa = PBXGroup;
 			children = (
+				6A59EF8519CE127A009F0F7C /* RBLayoutManager.h */,
+				6A59EF8619CE127A009F0F7C /* RBLayoutManager.m */,
+				6A59EF8219CE10A5009F0F7C /* RBMagicTextView.h */,
+				6A59EF8319CE10A5009F0F7C /* RBMagicTextView.m */,
+				6A59EF7F19CE0F60009F0F7C /* NSString+Emojize.h */,
+				6A59EF8019CE0F60009F0F7C /* NSString+Emojize.m */,
+				6A59EF7C19CE0E3E009F0F7C /* NSString+RBMarkdown.h */,
+				6A59EF7D19CE0E9C009F0F7C /* NSString+RBMarkdown.m */,
 				6A6A8CAB192A3B14006A29BD /* MMDocument_Private.h */,
 				6A6A8CAC192A3B14006A29BD /* MMDocument.h */,
 				6A6A8CAD192A3B14006A29BD /* MMDocument.m */,
@@ -260,8 +263,9 @@
 				6A6A8CBC192A3B14006A29BD /* MMSpanParser.m */,
 				6A6A8CD6192BC05C006A29BD /* MMAttributesHelper.h */,
 				6A6A8CD7192BC05C006A29BD /* MMAttributesHelper.m */,
+				6A59EF7B19CE05D3009F0F7C /* MMMarkdownStyleSheet.h */,
 			);
-			name = KoaMarkdownRender;
+			name = MMAttributedMarkdown;
 			sourceTree = "<group>";
 		};
 		6A6A8CC5192A3B49006A29BD /* Fonts */ = {
@@ -368,7 +372,6 @@
 				6A6A8CD1192A3F22006A29BD /* OpenSans-Bold.ttf in Resources */,
 				6A2A9C7219267CCE00821F5B /* InfoPlist.strings in Resources */,
 				6A6A8CCD192A3B49006A29BD /* OpenSans-Semibold.ttf in Resources */,
-				6A28A1AD192CC7CB00E209BE /* placeholder.gif in Resources */,
 				6A2A9C7B19267CCE00821F5B /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -422,20 +425,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A6A8CBE192A3B14006A29BD /* MMElement.m in Sources */,
+				6A59EF8419CE10A5009F0F7C /* RBMagicTextView.m in Sources */,
 				6A6A8CBD192A3B14006A29BD /* MMDocument.m in Sources */,
+				6A59EF8119CE0F60009F0F7C /* NSString+Emojize.m in Sources */,
 				6A2A9C7819267CCE00821F5B /* KoaAppDelegate.m in Sources */,
 				6A6A8CC0192A3B14006A29BD /* MMHTMLParser.m in Sources */,
 				6A6A8CD8192BC05C006A29BD /* MMAttributesHelper.m in Sources */,
+				6A59EF8719CE127A009F0F7C /* RBLayoutManager.m in Sources */,
 				6A1B5C89192CE91C00195E29 /* VSAnimatedGIFResponseSerializer.m in Sources */,
 				6A6A8CC3192A3B14006A29BD /* MMScanner.m in Sources */,
 				6A6A8CC1192A3B14006A29BD /* MMMarkdown.m in Sources */,
-				6A28A1B9192CDBF800E209BE /* YLImageView.m in Sources */,
 				6A2A9C7E19267CCE00821F5B /* KoaViewController.m in Sources */,
+				6A59EF7E19CE0E9C009F0F7C /* NSString+RBMarkdown.m in Sources */,
 				6A2A9C7419267CCE00821F5B /* main.m in Sources */,
-				6A28A1B8192CDBF800E209BE /* YLGIFImage.m in Sources */,
 				6A6A8CC4192A3B14006A29BD /* MMSpanParser.m in Sources */,
 				6A1B5C86192CDFC600195E29 /* AnimatedGIFImageSerialization.m in Sources */,
-				6A1B5C8C192D12B300195E29 /* UITextView+Gifs.m in Sources */,
 				6A6A8CBF192A3B14006A29BD /* MMGenerator.m in Sources */,
 				6A6A8CC2192A3B14006A29BD /* MMParser.m in Sources */,
 			);

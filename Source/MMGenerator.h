@@ -25,11 +25,19 @@
 
 #import <Foundation/Foundation.h>
 
+@class MMElement;
+
+@protocol AttributedStringStylesGeneratorDelegate
+- (NSAttributedString*)startStringForElement:(MMElement *)anElement listType:(NSString *)listType nestedStyles:(NSMutableArray *)nestedStyles;
+- (NSMutableDictionary *)attributesDictionaryForElement:(MMElement *)anElement nestedStyles:(NSMutableArray *)nestedStyles;
+- (NSAttributedString *)endStringForElement:(MMElement *)anElement  nestedStyles:(NSMutableArray *)nestedStyles;
+@end
 
 @class MMDocument;
 
 @interface MMGenerator : NSObject
 
-- (NSString *)generateHTML:(MMDocument *)aDocument;
+- (NSMutableAttributedString *)generateAttributedString:(MMDocument *)aDocument;
+@property (nonatomic, weak) id<AttributedStringStylesGeneratorDelegate> delegate;
 
 @end

@@ -53,6 +53,9 @@ typedef enum
     MMElementTypeTableHeaderCell,
     MMElementTypeTableRow,
     MMElementTypeTableRowCell,
+    MMElementTypeRedboothLink,
+    MMElementTypeMention,
+    MMElementTypeYoutubeVideo,
 } MMElementType;
 
 typedef NS_ENUM(NSInteger, MMTableCellAlignment)

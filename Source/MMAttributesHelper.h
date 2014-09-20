@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MMGenerator.h"
 
 @class MMElement;
 
-@interface MMAttributesHelper : NSObject
+@interface MMAttributesHelper : NSObject <AttributedStringStylesGeneratorDelegate>
 
-+ (NSAttributedString*)startStringForElement:(MMElement *)anElement listType:(NSString *)listType;
++ (NSAttributedString*)startStringForElement:(MMElement *)anElement listType:(NSString *)listType nestedStyles:(NSMutableArray *)nestedStyles;
 + (NSMutableDictionary *)attributesDictionaryForElement:(MMElement *)anElement nestedStyles:(NSMutableArray *)nestedStyles;
-+ (NSString *)endStringForElement:(MMElement *)anElement;
++ (NSAttributedString *)endStringForElement:(MMElement *)anElement  nestedStyles:(NSMutableArray *)nestedStyles;
 
 @end

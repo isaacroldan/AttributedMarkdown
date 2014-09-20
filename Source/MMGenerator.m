@@ -24,258 +24,114 @@
 //
 
 #import "MMGenerator.h"
-
-
 #import "MMDocument.h"
 #import "MMElement.h"
+#import "MMAttributesHelper.h"
 
-// This value is used to estimate the length of the HTML output. The length of the markdown document
-// is multplied by it to create an NSMutableString with an initial capacity.
-static const Float64 kHTMLDocumentLengthMultiplier = 1.25;
-
-static NSString * __HTMLEscapedString(NSString *aString)
-{
-    NSMutableString *result = [aString mutableCopy];
-    
-    [result replaceOccurrencesOfString:@"&"
-                            withString:@"&amp;"
-                               options:NSLiteralSearch
-                                 range:NSMakeRange(0, result.length)];
-    [result replaceOccurrencesOfString:@"\""
-                            withString:@"&quot;"
-                               options:NSLiteralSearch
-                                 range:NSMakeRange(0, result.length)];
-    
-    return result;
-}
-
-static NSString *__obfuscatedEmailAddress(NSString *anAddress)
-{
-    NSMutableString *result = [NSMutableString new];
-    
-    NSString *(^decimal)(unichar c) = ^(unichar c){ return [NSString stringWithFormat:@"&#%d;", c];  };
-    NSString *(^hex)(unichar c)     = ^(unichar c){ return [NSString stringWithFormat:@"&#x%x;", c]; };
-    NSString *(^raw)(unichar c)     = ^(unichar c){ return [NSString stringWithCharacters:&c length:1]; };
-    NSArray *encoders = @[ decimal, hex, raw ];
-    
-    for (NSUInteger idx=0; idx<anAddress.length; idx++)
-    {
-        unichar character = [anAddress characterAtIndex:idx];
-        NSString *(^encoder)(unichar c);
-        if (character == '@')
-        {
-            // Make sure that the @ gets encoded
-            encoder = [encoders objectAtIndex:arc4random_uniform(2)];
-        }
-        else
-        {
-            int r = arc4random_uniform(100);
-            encoder = encoders[(r >= 90) ? 2 : (r >= 45) ? 1 : 0];
-        }
-        [result appendString:encoder(character)];
-    }
-    
-    return result;
-}
-
-static NSString * __HTMLStartTagForElement(MMElement *anElement)
-{
-    switch (anElement.type)
-    {
-        case MMElementTypeHeader:
-            return [NSString stringWithFormat:@"<h%u>", (unsigned int)anElement.level];
-        case MMElementTypeParagraph:
-            return @"<p>";
-        case MMElementTypeBulletedList:
-            return @"<ul>\n";
-        case MMElementTypeNumberedList:
-            return @"<ol>\n";
-        case MMElementTypeListItem:
-            return @"<li>";
-        case MMElementTypeBlockquote:
-            return @"<blockquote>\n";
-        case MMElementTypeCodeBlock:
-            return @"<pre><code>";
-        case MMElementTypeLineBreak:
-            return @"<br />";
-        case MMElementTypeHorizontalRule:
-            return @"\n<hr />\n";
-        case MMElementTypeStrikethrough:
-            return @"<del>";
-        case MMElementTypeStrong:
-            return @"<strong>";
-        case MMElementTypeEm:
-            return @"<em>";
-        case MMElementTypeCodeSpan:
-            return @"<code>";
-        case MMElementTypeImage:
-            if (anElement.title != nil)
-            {
-                return [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\" title=\"%@\" />",
-                        __HTMLEscapedString(anElement.href),
-                        __HTMLEscapedString(anElement.stringValue),
-                        __HTMLEscapedString(anElement.title)];
-            }
-            return [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\" />",
-                    __HTMLEscapedString(anElement.href),
-                    __HTMLEscapedString(anElement.stringValue)];
-        case MMElementTypeLink:
-            if (anElement.title != nil)
-            {
-                return [NSString stringWithFormat:@"<a title=\"%@\" href=\"%@\">",
-                        __HTMLEscapedString(anElement.title), __HTMLEscapedString(anElement.href)];
-            }
-            return [NSString stringWithFormat:@"<a href=\"%@\">", __HTMLEscapedString(anElement.href)];
-        case MMElementTypeMailTo:
-            return [NSString stringWithFormat:@"<a href=\"%@\">%@</a>",
-                    __obfuscatedEmailAddress([NSString stringWithFormat:@"mailto:%@", anElement.href]),
-                    __obfuscatedEmailAddress(anElement.href)];
-        case MMElementTypeEntity:
-            return anElement.stringValue;
-        case MMElementTypeTable:
-            return @"<table>";
-        case MMElementTypeTableHeader:
-            return @"<thead><tr>";
-        case MMElementTypeTableHeaderCell:
-            return anElement.alignment == MMTableCellAlignmentCenter ? @"<th align='center'>"
-                 : anElement.alignment == MMTableCellAlignmentLeft   ? @"<th align='left'>"
-                 : anElement.alignment == MMTableCellAlignmentRight  ? @"<th align='right'>"
-                 : @"<th>";
-        case MMElementTypeTableRow:
-            return @"<tr>";
-        case MMElementTypeTableRowCell:
-            return anElement.alignment == MMTableCellAlignmentCenter ? @"<td align='center'>"
-                 : anElement.alignment == MMTableCellAlignmentLeft   ? @"<td align='left'>"
-                 : anElement.alignment == MMTableCellAlignmentRight  ? @"<td align='right'>"
-                 : @"<td>";
-        default:
-            return nil;
-    }
-}
-
-static NSString * __HTMLEndTagForElement(MMElement *anElement)
-{
-    switch (anElement.type)
-    {
-        case MMElementTypeHeader:
-            return [NSString stringWithFormat:@"</h%u>\n", (unsigned int)anElement.level];
-        case MMElementTypeParagraph:
-            return @"</p>\n";
-        case MMElementTypeBulletedList:
-            return @"</ul>\n";
-        case MMElementTypeNumberedList:
-            return @"</ol>\n";
-        case MMElementTypeListItem:
-            return @"</li>\n";
-        case MMElementTypeBlockquote:
-            return @"</blockquote>\n";
-        case MMElementTypeCodeBlock:
-            return @"</code></pre>\n";
-        case MMElementTypeStrikethrough:
-            return @"</del>";
-        case MMElementTypeStrong:
-            return @"</strong>";
-        case MMElementTypeEm:
-            return @"</em>";
-        case MMElementTypeCodeSpan:
-            return @"</code>";
-        case MMElementTypeLink:
-            return @"</a>";
-        case MMElementTypeTable:
-            return @"</tbody></table>";
-        case MMElementTypeTableHeader:
-            return @"</tr></thead><tbody>";
-        case MMElementTypeTableHeaderCell:
-            return @"</th>";
-        case MMElementTypeTableRow:
-            return @"</tr>";
-        case MMElementTypeTableRowCell:
-            return @"</td>";
-        default:
-            return nil;
-    }
-}
 
 @interface MMGenerator ()
-- (void) _generateHTMLForElement:(MMElement *)anElement
-                      inDocument:(MMDocument *)aDocument
-                            HTML:(NSMutableString *)theHTML
-                        location:(NSUInteger *)aLocation;
+- (void) _generateAttributedStringForElement:(MMElement *)anElement
+                                  inDocument:(MMDocument *)aDocument
+                            attributedString:(NSMutableAttributedString *)theHTML
+                                    location:(NSUInteger *)aLocation
+                              nestedElements:(NSMutableArray*)nestedElements;
 @end
 
 @implementation MMGenerator
 
+
 #pragma mark - Public Methods
 
-- (NSString *)generateHTML:(MMDocument *)aDocument
+- (NSAttributedString *)generateAttributedString:(MMDocument *)aDocument
 {
-    NSString   *markdown = aDocument.markdown;
     NSUInteger  location = 0;
-    NSUInteger  length   = markdown.length;
+    NSMutableAttributedString *theAttributedString = [[NSMutableAttributedString alloc] init];
     
-    NSMutableString *HTML = [NSMutableString stringWithCapacity:length * kHTMLDocumentLengthMultiplier];
-    
-    for (MMElement *element in aDocument.elements)
-    {
-        if (element.type == MMElementTypeHTML)
-        {
-            [HTML appendString:[aDocument.markdown substringWithRange:element.range]];
+    for (MMElement *element in aDocument.elements) {
+        if (element.type == MMElementTypeHTML) {
+            [theAttributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[aDocument.markdown substringWithRange:element.range]]];
         }
-        else
-        {
-            [self _generateHTMLForElement:element
-                               inDocument:aDocument
-                                 HTML:HTML
-                             location:&location];
+        else {
+            [self _generateAttributedStringForElement:element
+                                           inDocument:aDocument
+                                     attributedString:theAttributedString
+                                             location:&location
+                                       nestedElements:nil];
         }
     }
     
-    return HTML;
+    return [theAttributedString copy];
 }
 
 
 #pragma mark - Private Methods
 
-- (void)_generateHTMLForElement:(MMElement *)anElement
-                     inDocument:(MMDocument *)aDocument
-                           HTML:(NSMutableString *)theHTML
-                       location:(NSUInteger *)aLocation
+- (void)_generateAttributedStringForElement:(MMElement *)anElement
+                                 inDocument:(MMDocument *)aDocument
+                           attributedString:(NSMutableAttributedString *)theAttributedString
+                                   location:(NSUInteger *)aLocation
+                             nestedElements:(NSMutableArray *)nestedElements;
+
 {
-    NSString *startTag = __HTMLStartTagForElement(anElement);
-    NSString *endTag   = __HTMLEndTagForElement(anElement);
+    NSString *markdown = aDocument.markdown;
     
-    if (startTag)
-        [theHTML appendString:startTag];
+    NSString *startOfList;
+    if (markdown.length>1 && markdown.length-anElement.range.location>=2) {
+        startOfList = [markdown substringWithRange:NSMakeRange(anElement.range.location, 2)];
+    }
+    
+    NSAttributedString *startTag;
+    NSAttributedString *endTag;
+        if (self.delegate) {
+        startTag = [self.delegate startStringForElement:anElement listType:startOfList nestedStyles:nestedElements];
+        endTag   = [self.delegate endStringForElement:anElement nestedStyles:nestedElements];
+    }
+    else {
+        startTag = [MMAttributesHelper startStringForElement:anElement listType:startOfList nestedStyles:nestedElements];
+        endTag   = [MMAttributesHelper endStringForElement:anElement nestedStyles:nestedElements];
+    }
+    
+    if (startTag) [theAttributedString appendAttributedString:startTag];
     
     for (MMElement *child in anElement.children)
     {
+        int start = (int)theAttributedString.length;
+        int end = (int)child.range.length;
         if (child.type == MMElementTypeNone)
         {
             NSString *markdown = aDocument.markdown;
             if (child.range.length == 0)
             {
-                [theHTML appendString:@"\n"];
+                [theAttributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
             }
             else
             {
-                [theHTML appendString:[markdown substringWithRange:child.range]];
+                [theAttributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[markdown substringWithRange:child.range]]];
+                if (self.delegate) {
+                    [theAttributedString addAttributes:[self.delegate attributesDictionaryForElement:anElement nestedStyles:nestedElements] range:NSMakeRange(start, end)];
+                }
+                else {
+                    [theAttributedString addAttributes:[MMAttributesHelper attributesDictionaryForElement:anElement nestedStyles:nestedElements] range:NSMakeRange(start, end)];
+                }
             }
         }
         else if (child.type == MMElementTypeHTML)
         {
-            [theHTML appendString:[aDocument.markdown substringWithRange:child.range]];
+            [theAttributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[aDocument.markdown substringWithRange:child.range]]];
+            [theAttributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"OpenSans" size:20] range:NSMakeRange(start, end)];
         }
         else
         {
-            [self _generateHTMLForElement:child
-                               inDocument:aDocument
-                                     HTML:theHTML
-                                 location:aLocation];
+            [nestedElements addObject:@(child.type)];
+            [self _generateAttributedStringForElement:child
+                                           inDocument:aDocument
+                                     attributedString:theAttributedString
+                                             location:aLocation
+                                       nestedElements:[nestedElements mutableCopy]];
         }
     }
     
-    if (endTag)
-        [theHTML appendString:endTag];
+    if (endTag) [theAttributedString appendAttributedString:endTag];
 }
 
 

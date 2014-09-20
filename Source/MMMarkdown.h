@@ -56,7 +56,7 @@ typedef NS_OPTIONS(NSUInteger, MMMarkdownExtensions)
  @result
     Returns an HTML string.
  */
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error __attribute__((nonnull(1)));
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string error:(__autoreleasing NSError **)error __attribute__((nonnull(1)));
 
 /*!
  Convert a Markdown string to HTML.
@@ -70,6 +70,9 @@ typedef NS_OPTIONS(NSUInteger, MMMarkdownExtensions)
  @result
     Returns an HTML string.
  */
-+ (NSString *)HTMLStringWithMarkdown:(NSString *)string extensions:(MMMarkdownExtensions)extensions error:(__autoreleasing NSError **)error __attribute__((nonnull(1)));
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string extensions:(MMMarkdownExtensions)extensions error:(__autoreleasing NSError **)error __attribute__((nonnull(1)));
+
+//Pass a delegate that will generate the styles for the attributed strings
++ (NSAttributedString *)attributedStringWithMarkdown:(NSString *)string attributesDelegate:(id)delegate extensions:(MMMarkdownExtensions)extensions error:(NSError *__autoreleasing *)error;
 
 @end
